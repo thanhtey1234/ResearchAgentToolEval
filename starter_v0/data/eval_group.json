@@ -3,5 +3,261 @@
   "dataset_role": "group",
   "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_calculator_add",
+      "phase": "B",
+      "query": "Tính 10 cộng 20",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "calculator",
+            "args": {
+              "a": 10,
+              "b": 20,
+              "operation": "add"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent phải dùng calculator để thực hiện phép cộng."
+      }
+    },
+    {
+      "id": "G02_calculator_subtract",
+      "phase": "B",
+      "query": "Lấy 9 trừ 4 thì còn bao nhiêu?",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "calculator",
+            "args": {
+              "a": 9,
+              "b": 4,
+              "operation": "subtract"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent phải nhận diện phép trừ và giữ đúng thứ tự hai toán hạng."
+      }
+    },
+    {
+      "id": "G03_calculator_multiply",
+      "phase": "B",
+      "query": "Tính tích của 7 và 8",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "calculator",
+            "args": {
+              "a": 7,
+              "b": 8,
+              "operation": "multiply"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent phải ánh xạ từ 'tích' sang operation=multiply."
+      }
+    },
+    {
+      "id": "G04_calculator_divide",
+      "phase": "B",
+      "query": "Chia 81 cho 9 giúp mình",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "calculator",
+            "args": {
+              "a": 81,
+              "b": 9,
+              "operation": "divide"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent phải nhận diện phép chia và giữ đúng thứ tự số bị chia, số chia."
+      }
+    },
+    {
+      "id": "G05_calculator_decimal_add",
+      "phase": "B",
+      "query": "Cộng 2.5 với 0.75",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "calculator",
+            "args": {
+              "a": 2.5,
+              "b": 0.75,
+              "operation": "add"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent phải trích đúng toán hạng thập phân và chọn phép cộng."
+      }
+    },
+    {
+      "id": "G06_calculator_multiturn_divide",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tính giúp mình hai số 36 và 6."
+        },
+        {
+          "role": "user",
+          "content": "Lấy số thứ nhất chia cho số thứ hai nhé."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "calculator",
+            "args": {
+              "a": 36,
+              "b": 6,
+              "operation": "divide"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Multi-turn: nhớ hai toán hạng ở lượt trước và áp dụng phép chia được nêu ở lượt mới nhất."
+      }
+    },
+    {
+      "id": "G07_calculator_multiturn_add",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Mình có hai số 14 và 5."
+        },
+        {
+          "role": "user",
+          "content": "Cộng hai số đó lại giúp mình."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "calculator",
+            "args": {
+              "a": 14,
+              "b": 5,
+              "operation": "add"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Multi-turn: tham chiếu 'hai số đó' tới các toán hạng từ lượt trước và thực hiện phép cộng."
+      }
+    },
+    {
+      "id": "G08_calculator_multiturn_correct_operand",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tính 9 nhân 8 giúp mình."
+        },
+        {
+          "role": "user",
+          "content": "À, đổi số thứ hai thành 7 nhé."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "calculator",
+            "args": {
+              "a": 9,
+              "b": 7,
+              "operation": "multiply"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Multi-turn: giữ phép nhân và toán hạng thứ nhất, đồng thời áp dụng sửa đổi 8 thành 7."
+      }
+    },
+    {
+      "id": "G09_calculator_multiturn_subtract",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Hai số mình cần tính là 22 và 11."
+        },
+        {
+          "role": "user",
+          "content": "Lấy số thứ nhất trừ số thứ hai."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "calculator",
+            "args": {
+              "a": 22,
+              "b": 11,
+              "operation": "subtract"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Multi-turn: dùng các toán hạng từ lượt trước và giữ thứ tự phép trừ được chỉ định."
+      }
+    },
+    {
+      "id": "G10_calculator_multiturn_new_request",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tính 100 chia cho 5."
+        },
+        {
+          "role": "user",
+          "content": "Đổi yêu cầu nhé, tính 3 cộng 4."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "calculator",
+            "args": {
+              "a": 3,
+              "b": 4,
+              "operation": "add"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Multi-turn: ưu tiên yêu cầu tính mới nhất thay vì nhầm toán hạng hoặc phép tính của lượt trước."
+      }
+    }
+  ]
 }
